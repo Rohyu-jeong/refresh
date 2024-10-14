@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { RefreshToken } from './entities/refresh_token.entity';
-import { Repository } from 'typeorm';
+import { LessThan, Repository } from 'typeorm';
 import { User } from 'src/users/entities/users.entity';
 
 @Injectable()
@@ -33,8 +33,19 @@ export class RefreshTokenService {
     });
   }
 
-  // Refresh Token 제거
+  // Refresh Token 제거 (로그아웃)
   async removeRefreshToken(token: string): Promise<void> {
     await this.refreshTokenRepository.delete({ token });
+  }
+
+  // 특정 사용자에 대한 모든 Refresh Token 제거(전체 로그아웃)
+  async removeAllRefreshToken (user: User): Promise<void> {
+    await this.refreshTokenRepository.delete({ user });
+  }
+
+  // 만료된 Refresh Token 제거
+  async removeExpiredRefreshTokens(): Promise<void> {
+    const now = new Date();
+    await this.refreshTokenRepository.delete({ expiresAt: LessThan(now) })
   }
 }

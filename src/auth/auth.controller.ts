@@ -33,10 +33,14 @@ export class AuthController {
     return this.authService.singIn(signInDto.username, signInDto.password);
   }
 
-  // Refresh Token을 사용하여 Access Token 갱신
+  // Refresh Token을 사용하여 Access Token 갱신(재발급)
   @Post('refresh')
-  @ApiBody({ type: RegisterDTO })
-  @ApiResponse({ status: 201, description: 'Access Token 재발급' })
+  @ApiBody({ type: RefreshTokenDTO })
+  @ApiResponse({
+    status: 201,
+    description: 'Access Token과 Refresh Token 재발급',
+    type: RefreshTokenDTO,
+  })
   async refresh(@Body() refreshTokenDto: RefreshTokenDTO) {
     const { refresh_token } = refreshTokenDto;
     return this.authService.refreshAccessToken(refresh_token);
@@ -49,7 +53,7 @@ export class AuthController {
   async logout(@Body() body: RefreshTokenDTO) {
     const { refresh_token } = body;
     await this.authService.logout(refresh_token);
-    return { message: '로그아웃 성공' }
+    return { message: '로그아웃 성공' };
   }
 
   // 프로필
