@@ -26,7 +26,7 @@ import { RefreshToken } from './refresh_token/entities/refresh_token.entity';
     }),
     AuthModule,
     UsersModule,
-    RefreshTokenModule
+    RefreshTokenModule,
   ],
   controllers: [AppController],
   providers: [AppService],
