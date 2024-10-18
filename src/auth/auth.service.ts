@@ -98,6 +98,11 @@ export class AuthService {
     await this.refreshTokenService.removeRefreshToken(refreshToken);
   }
 
+  // 전체 로그인
+  async logoutAll (id: number): Promise<void> {
+    await this.refreshTokenService.removeAllRefreshToken(id);
+  }
+
   // 회원가입
   async register(username: string, password: string, role: string = 'user') {
     return this.usersService.createUser(username, password, role);

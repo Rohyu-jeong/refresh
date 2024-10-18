@@ -39,8 +39,8 @@ export class RefreshTokenService {
   }
 
   // 특정 사용자에 대한 모든 Refresh Token 제거(전체 로그아웃)
-  async removeAllRefreshToken (user: User): Promise<void> {
-    await this.refreshTokenRepository.delete({ user });
+  async removeAllRefreshToken (id: number): Promise<void> {
+    await this.refreshTokenRepository.delete({ user: {id} });
   }
 
   // 만료된 Refresh Token 제거

@@ -56,6 +56,18 @@ export class AuthController {
     return { message: '로그아웃 성공' };
   }
 
+  // 전체 로그아웃
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Post('logoutAll')
+  @Roles('user', 'admin')
+  @ApiBearerAuth('access-token')
+  @ApiResponse({ status: 200, description: '전체 로그아웃' })
+  async logoutAll(@Req() req: Request) {
+    const user = req.user as any;
+    await this.authService.logoutAll(user.id);
+    return { message: '전체 로그아웃' };
+  }
+
   // 프로필
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Get('Profile')
