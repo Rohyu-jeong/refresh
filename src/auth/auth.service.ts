@@ -25,8 +25,19 @@ export class AuthService {
       throw new UnauthorizedException('다시');
     }
 
+    // 기존 세션 무효화
+    await this.logoutAll(user.id);
+
+    // 최신 tokenVersion 조회한 후 포함하여 Access Token 발급
+    const updateUser = await this.usersService.findeOne(username);
+
     // Access Token에 들어갈 유저 정보
-    const payload = { sub: user.id, username: user.username, role: user.role };
+    const payload = {
+      sub: updateUser.id,
+      username: updateUser.username,
+      role: updateUser.role,
+      tokenVersion: updateUser.tokenVersion,
+    };
     const accessToken = await this.jwtService.signAsync(payload, {
       expiresIn: '5m',
     });
@@ -51,9 +62,7 @@ export class AuthService {
   }
 
   // Refresh Token을 사용하여 새로운 Access Token 발급(재발급)
-  async refreshAccessToken(
-    refreshToken: string,
-  ): Promise<RefreshResponseDTO> {
+  async refreshAccessToken(refreshToken: string): Promise<RefreshResponseDTO> {
     const storedRefreshToken =
       await this.refreshTokenService.findeByToken(refreshToken);
     if (!storedRefreshToken) {
@@ -72,20 +81,31 @@ export class AuthService {
     // 기존 Refresh Token 제거
     await this.refreshTokenService.removeRefreshToken(refreshToken);
 
-    // 새로운 Refresh Token 제거
+    // tokenVersion 증가
+    await this.usersService.incrementTokenVersion(user.id);
+
+    // 최신 tokenVersion 조회
+    const updateUser = await this.usersService.findeOne(user.username);
+
+    // 새로운 Refresh Token 생성
     const newRefreshToken = this.generateRefreshToken();
     const newExpiresAt = new Date();
     newExpiresAt.setDate(newExpiresAt.getDate() + 7);
 
     // 새로운 Refresh Token 저장
     await this.refreshTokenService.saveRefreshToken(
-      user,
+      updateUser,
       newRefreshToken,
       newExpiresAt,
     );
 
     // 새로운 Access Token 생성
-    const payload = { sub: user.id, username: user.username, role: user.role };
+    const payload = {
+      sub: updateUser.id,
+      username: updateUser.username,
+      role: updateUser.role,
+      tokenVersion: updateUser.tokenVersion,
+    };
     const accessToken = await this.jwtService.signAsync(payload, {
       expiresIn: '5m',
     });
@@ -95,12 +115,22 @@ export class AuthService {
 
   // 로그아웃 시 Refresh Token 제거
   async logout(refreshToken: string): Promise<void> {
-    await this.refreshTokenService.removeRefreshToken(refreshToken);
+    const storedRefreshToken =
+      await this.refreshTokenService.findeByToken(refreshToken);
+    if (storedRefreshToken) {
+      const user = storedRefreshToken.user;
+
+      await this.refreshTokenService.removeRefreshToken(refreshToken);
+      // tokenVersion 증가하여 기존 Access Token 무효화
+      await this.usersService.incrementTokenVersion(user.id);
+    }
+    // 유효하지 않은 토큰이라도 성공적으로 로그아웃 처리
   }
 
-  // 전체 로그인
-  async logoutAll (id: number): Promise<void> {
+  // 전체 로그아웃
+  async logoutAll(id: number): Promise<void> {
     await this.refreshTokenService.removeAllRefreshToken(id);
+    await this.usersService.incrementTokenVersion(id);
   }
 
   // 회원가입

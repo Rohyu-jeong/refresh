@@ -12,7 +12,7 @@ export class RefreshToken {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column()
+  @Column({ unique: true }) // 단일 세션 환경
   token: string;
 
   @CreateDateColumn()

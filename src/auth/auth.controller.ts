@@ -59,7 +59,7 @@ export class AuthController {
   // 전체 로그아웃
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Post('logoutAll')
-  @Roles('user', 'admin')
+  @Roles('admin')
   @ApiBearerAuth('access-token')
   @ApiResponse({ status: 200, description: '전체 로그아웃' })
   async logoutAll(@Req() req: Request) {

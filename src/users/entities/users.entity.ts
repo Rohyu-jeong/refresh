@@ -15,6 +15,9 @@ export class User {
   @Column({ default: 'user' })
   role: string; // user, admin
 
+  @Column({ default: 0 })
+  tokenVersion: number; // Access Token 관리
+
   @OneToMany(() => RefreshToken, (RefreshToken) => RefreshToken.user)
   refreshTokens: RefreshToken[];
 }

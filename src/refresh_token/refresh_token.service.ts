@@ -17,6 +17,8 @@ export class RefreshTokenService {
     token: string,
     expiresAt: Date,
   ): Promise<RefreshToken> {
+    // 기존 Refresh Token 삭제 - 단일
+    await this.refreshTokenRepository.delete({ user });
     const refreshToken = this.refreshTokenRepository.create({
       token,
       user,
@@ -39,13 +41,13 @@ export class RefreshTokenService {
   }
 
   // 특정 사용자에 대한 모든 Refresh Token 제거(전체 로그아웃)
-  async removeAllRefreshToken (id: number): Promise<void> {
-    await this.refreshTokenRepository.delete({ user: {id} });
+  async removeAllRefreshToken(id: number): Promise<void> {
+    await this.refreshTokenRepository.delete({ user: { id } });
   }
 
   // 만료된 Refresh Token 제거
   async removeExpiredRefreshTokens(): Promise<void> {
     const now = new Date();
-    await this.refreshTokenRepository.delete({ expiresAt: LessThan(now) })
+    await this.refreshTokenRepository.delete({ expiresAt: LessThan(now) });
   }
 }

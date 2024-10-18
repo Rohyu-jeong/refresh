@@ -19,7 +19,7 @@ export class UsersService {
     });
   }
 
-  // 새로운 사용자 생성
+  // 회원가입
   async createUser(
     username: string,
     password: string,
@@ -32,5 +32,10 @@ export class UsersService {
       role,
     });
     return this.userRepository.save(user);
+  }
+
+  // tokenVersion 증가
+  async incrementTokenVersion(id: number): Promise<void> {
+    await this.userRepository.increment({ id }, 'tokenVersion', 1);
   }
 }
