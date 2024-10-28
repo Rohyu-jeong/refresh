@@ -3,10 +3,18 @@ import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { config } from 'dotenv';
+import { ExpressAdapter } from '@nestjs/platform-express';
+import * as express from 'express';
+import { Handler, Context, Callback } from 'aws-lambda';
+import { createServer, proxy } from 'aws-serverless-express';
 
 async function bootstrap() {
   config(); // .env 파일 로드
-  const app = await NestFactory.create(AppModule);
+  const expressApp = express();
+  const app = await NestFactory.create(
+    AppModule,
+    new ExpressAdapter(expressApp),
+  );
 
   // 전역 파이프 설정
   app.useGlobalPipes(
@@ -27,7 +35,9 @@ async function bootstrap() {
   // Swagger 설정
   const configSwagger = new DocumentBuilder()
     .setTitle('NestJS Auth API')
-    .setDescription('API documentation for NestJS Authentication with Refresh Tokens')
+    .setDescription(
+      'API documentation for NestJS Authentication with Refresh Tokens',
+    )
     .setVersion('1.0')
     .addBearerAuth(
       {
@@ -44,7 +54,21 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, configSwagger);
   SwaggerModule.setup('api', app, document);
 
-  await app.listen(3000);
+  await app.init();
   console.log(`Application is running on: ${await app.getUrl()}`);
 }
-bootstrap();
+
+let cachedServer: Handler;
+
+export const handler: Handler = async (
+  event: any,
+  context: Context,
+  callback: Callback,
+) => {
+  if (!cachedServer) {
+    const expressApp = await bootstrap();
+    cachedServer = proxy(createServer(expressApp), event, context);
+  }
+
+  return cachedServer(event, context, callback);
+};
