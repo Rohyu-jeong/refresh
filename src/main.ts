@@ -27,7 +27,7 @@ async function bootstrap() {
 
   // CORS 설정
   app.enableCors({
-    origin: ['http://localhost:3000', 'https://refresh-beryl.vercel.app/'],
+    origin: ['http://localhost:3000', 'https://refresh-beryl.vercel.app/', 'https://refresh-5czjf3nrb-yujeongs-projects-3e4f6ac1.vercel.app/'],
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     credentials: true,
   });
@@ -56,6 +56,7 @@ async function bootstrap() {
 
   await app.init();
   console.log(`Application is running on: ${await app.getUrl()}`);
+  return expressApp;
 }
 
 let cachedServer: Handler;

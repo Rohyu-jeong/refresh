@@ -16,11 +16,11 @@ import { RefreshToken } from './refresh_token/entities/refresh_token.entity';
     }),
     TypeOrmModule.forRoot({
       type: 'postgres',
-      host: process.env.DATABASE_HOST || 'ep-nameless-firefly-a49bi3zp-pooler.us-east-1.aws.neon.tech',
-      port: parseInt(process.env.DATABASE_PORT, 10) || 5432,
-      username: process.env.DATABASE_USERNAME || 'default',
-      password: process.env.DATABASE_PASSWORD || 'M2EcWsg4oplI',
-      database: process.env.DATABASE_NAME || 'verceldb',
+      host: process.env.POSTGRES_HOST || 'ep-nameless-firefly-a49bi3zp-pooler.us-east-1.aws.neon.tech',
+      port: parseInt(process.env.POSTGRES_PORT, 10) || 5432,
+      username: process.env.POSTGRES_USER || 'default',
+      password: process.env.POSTGRES_PASSWORD || 'M2EcWsg4oplI',
+      database: process.env.POSTGRES_DATABASE || 'verceldb',
       entities: [User, RefreshToken],
       synchronize: true,
       ssl: {
