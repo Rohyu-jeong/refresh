@@ -1,8 +1,6 @@
 import { ConfigService } from '@nestjs/config';
 import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
-import * as fs from 'fs';
-import * as path from 'path';
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { UsersService } from 'src/users/users.service';
 import { User } from 'src/users/entities/users.entity';
@@ -21,11 +19,8 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       // 만료된 JWT는 허용하지 않음
       ignoreExpiration: false,
 
-      // Private key를 Pulbic key 경로에서 가져옴
-      secretOrKey: fs.readFileSync(
-        path.resolve(configService.get<string>('PUBLIC_KEY_PATH')),
-        'utf8',
-      ),
+      // 파일 경로 대신 환경 변수에서 public key를 가져옴
+      secretOrKey: configService.get<string>('public_key').replace(/\\n/g, '\n'),
       // RSA256 알고리즘을 사용하여 JWT 검증
       algorithms: ['RS256'],
     });

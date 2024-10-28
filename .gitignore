@@ -42,6 +42,9 @@ lerna-debug.log*
 .env.production.local
 .env.local
 
+# 키 폴더
+/keys/
+
 # temp directory
 .temp
 .tmp
