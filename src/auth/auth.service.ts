@@ -1,10 +1,10 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { RefreshTokenService } from 'src/refresh_token/refresh_token.service';
-import { UsersService } from 'src/users/users.service';
+import { RefreshTokenService } from '../refresh_token/refresh_token.service';
+import { UsersService } from '../users/users.service';
 import * as bcrypt from 'bcrypt';
 import * as crypto from 'crypto';
-import { RefreshResponseDTO } from 'src/refresh_token/dto/refresh_response.dto';
+import { RefreshResponseDTO } from '../refresh_token/dto/refresh_response.dto';
 
 @Injectable()
 export class AuthService {

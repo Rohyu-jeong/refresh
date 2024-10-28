@@ -2,8 +2,8 @@ import { ConfigService } from '@nestjs/config';
 import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { Injectable, UnauthorizedException } from '@nestjs/common';
-import { UsersService } from 'src/users/users.service';
-import { User } from 'src/users/entities/users.entity';
+import { UsersService } from '../users/users.service';
+import { User } from '../users/entities/users.entity';
 
 // Access Token에 대한 인증 처리
 @Injectable()
